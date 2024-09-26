@@ -65,37 +65,37 @@ r2 = r2_score(data['casos_corrientes']['06/01/2007':'29/12/2018'], predicted_cas
 print(f'MAE: {mae}, R²: {r2}')
 
 
-# # Gráfico de predicciones vs valores reales
-# plt.figure(figsize=(20, 10))
-# plt.plot(data.index, data['casos_corrientes'], label='Casos reales')
-# plt.plot(data.index, predicted_cases_exp, label='Predicciones', color='red')
-# plt.xlabel('Fecha')
-# plt.ylabel('Casos de dengue')
-# plt.title('Predicción de Casos de Dengue con SARIMA')
-# plt.legend()
-# plt.show()
+# Gráfico de predicciones vs valores reales
+plt.figure(figsize=(20, 10))
+plt.plot(data.index, data['casos_corrientes'], label='Casos reales')
+plt.plot(data.index, predicted_cases_exp, label='Predicciones', color='red')
+plt.xlabel('Fecha')
+plt.ylabel('Casos de dengue')
+plt.title('Predicción de Casos de Dengue con SARIMA')
+plt.legend()
+plt.show()
 
 #import matplotlib.pyplot as plt
 
-# # Crear un gráfico de líneas para los casos de dengue, temperatura y precipitación
-# plt.figure(figsize=(12, 6))
+# Crear un gráfico de líneas para los casos de dengue, temperatura y precipitación
+plt.figure(figsize=(12, 6))
 
-# # Graficar casos de dengue
-# plt.plot(data.index, data['casos_corrientes'], label='Casos de Dengue', color='blue')
+# Graficar casos de dengue
+plt.plot(data.index, data['casos_corrientes'], label='Casos de Dengue', color='blue')
 
-# # Graficar la temperatura
-# plt.plot(data.index, data['temperatura'], label='Temperatura (°C)', color='red')
+# Graficar la temperatura
+plt.plot(data.index, data['temperatura'], label='Temperatura (°C)', color='red')
 
-# # Graficar la precipitación
-# plt.plot(data.index, data['precipitacion_corrientes'], label='Precipitación (mm)', color='green')
+# Graficar la precipitación
+plt.plot(data.index, data['precipitacion_corrientes'], label='Precipitación (mm)', color='green')
 
-# # Etiquetas y título
-# plt.xlabel('Fecha')
-# plt.ylabel('Valores')
-# plt.title('Casos de Dengue, Temperatura y Precipitación a lo largo del tiempo')
-# plt.legend()
+# Etiquetas y título
+plt.xlabel('Fecha')
+plt.ylabel('Valores')
+plt.title('Casos de Dengue, Temperatura y Precipitación a lo largo del tiempo')
+plt.legend()
 
-# plt.show()
+plt.show()
 
 # Gráfico de dispersión de temperatura vs casos de dengue
 plt.figure(figsize=(8, 6))
