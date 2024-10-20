@@ -76,7 +76,7 @@ future_data = pd.read_csv('./clima_futuro.csv')
 print(future_data.head())
 
 # Convertir la columna 'fecha' al formato datetime
-future_data['fecha'] = pd.to_datetime(future_data['fecha'], format= '%Y-%m-%d')
+future_data['fecha'] = pd.to_datetime(future_data['fecha'], format= 'ISO8601')
 
 # Mostrar las primeras filas del dataset después del preprocesamiento
 print('Mostrar las primeras filas del dataset después del preprocesamiento')
@@ -92,7 +92,7 @@ future_predictions = future_predictions.astype(int)
 print(future_predictions)
 
 # # # Añadir las predicciones a las fechas futuras y guardar en un archivo
-future_data['predicted_casos'] = future_predictions
+future_data['casos_predichos'] = future_predictions
 future_data.to_csv('predicciones_dengue_futuras.csv', index=False)
 
 #Realizo esto para que se pueda mostrar la cantidad de casos por mes, solo para que sea mas visible en los graficos 
@@ -101,22 +101,21 @@ df_cleaned['fecha_por_mes'] = df_cleaned['fecha'].dt.to_period('M')
 
 # Agrupar por 'fecha_por_mes' y sumar los casos de dengue por cada mes
 casos_por_mes = df_cleaned.groupby('fecha_por_mes')['casos_corrientes'].sum().reset_index()
-
+casos_por_mes['temperatura'] = df_cleaned['temperatura']
+casos_por_mes['precipitacion_corrientes'] = df_cleaned['precipitacion_corrientes'] 
 # Mostrar el resultado
 print(casos_por_mes)
 
-#REALIZO LO MISMO PARA LOS DATOS DE FECHAS FUTURAS
+#REALIZO LO MISMO PARA LOS DATOS DE fECHAS FUTURAS
 future_data['fecha_por_mes'] = future_data['fecha'].dt.to_period('M')
 
 # Agrupar por 'fecha_por_mes' y sumar los casos de dengue por cada mes
-casos_por_mes_futuro = future_data.groupby('fecha_por_mes')['predicted_casos'].sum().reset_index()
-
+casos_por_mes_futuro = future_data.groupby('fecha_por_mes')['casos_predichos'].sum().reset_index()
+casos_por_mes_futuro['temperatura'] = future_data['temperatura']
+casos_por_mes_futuro['precipitacion_corrientes'] = future_data['precipitacion_corrientes'] 
 # Mostrar el resultado
 print(casos_por_mes_futuro)
 
-
-
-#import matplotlib.pyplot as plt
 #GRAFICA PARA VER LA CANTIDAD DE CASOS EN EL CONJUNTO DE DATOS HISTORICO
 # Graficar los casos de dengue por mes
 plt.figure(figsize=(15, 6))
@@ -124,10 +123,9 @@ plt.figure(figsize=(15, 6))
 # Gráfico de líneas
 plt.plot(casos_por_mes['fecha_por_mes'].astype(str), casos_por_mes['casos_corrientes'], marker='o', linestyle='-', color='b', label='Casos por mes')
 
-
 # Etiquetas y título
-plt.title('Cantidad de casos de Dengue por mes (YYYY-MM)')
-plt.xlabel('Fecha (YYYY-MM)',labelpad = 2)
+plt.title('Cantidad de casos de Dengue por mes: Datos Historicos')
+plt.xlabel('fecha (YYYY-MM)',labelpad = 2)
 plt.ylabel('Cantidad de casos')
 
 # Rotar las etiquetas del eje x para mejorar la legibilidad
@@ -141,21 +139,16 @@ plt.legend()
 #plt.tight_layout()
 plt.show()
 
-#GRAFICA PARA VER LA CANTIDAD DE CASOS EN EL CONJUNTO DE DATOS HISTORICO
-# Graficar los casos de dengue por mes
+# #GRAFICA PARA VER LA CANTIDAD DE CASOS EN EL CONJUNTO DE DATOS FUTUROS
+
 plt.figure(figsize=(15, 6))
 
-# Gráfico de líneas
-plt.plot(casos_por_mes_futuro['fecha_por_mes'].astype(str), casos_por_mes_futuro['predicted_casos'], marker='o', linestyle='-', color='b', label='Casos por mes')
-
-
-# Opcional: Gráfico de barras (puedes descomentar si prefieres barras)
-# plt.bar(casos_por_mes['fecha_por_mes'].astype(str), casos_por_mes['casos_corrientes'], color='skyblue')
+plt.plot(casos_por_mes_futuro['fecha_por_mes'].astype(str), casos_por_mes_futuro['casos_predichos'], marker='o', linestyle='-', color='b', label='Casos por mes')
 
 # Etiquetas y título
-plt.title('Cantidad de casos de Dengue por mes (YYYY-MM)')
-plt.xlabel('Fecha (YYYY-MM)',labelpad = 2)
-plt.ylabel('Cantidad de casos')
+plt.title('Cantidad de casos de Dengue por mes: Datos futuros proporcionados')
+plt.xlabel('fecha (YYYY-MM)',labelpad = 2)
+plt.ylabel('Cantidad de casos' )
 
 # Rotar las etiquetas del eje x para mejorar la legibilidad
 plt.xticks(rotation=90)
@@ -164,25 +157,130 @@ plt.subplots_adjust(bottom = 0.15)
 # Añadir leyenda
 plt.legend()
 
-# Mostrar gráfico
-#plt.tight_layout()
+plt.tight_layout()
 plt.show()
 
-# plt.figure(figsize=(14, 7))
+# Graficar la temperatura por mes - DATOS HISTORICOS 
+plt.figure(figsize=(15, 6))
 
-# # Gráfico para el conjunto inicial
-# plt.scatter(df_cleaned['temperatura'], df_cleaned['casos_corrientes'], color='blue', label='Datos históricos', alpha=0.5)
-# plt.scatter(df_cleaned['precipitacion_corrientes'], df_cleaned['casos_corrientes'], color='green', label='Datos históricos (Precipitación)', alpha=0.5)
+plt.plot(casos_por_mes['fecha_por_mes'].astype(str), casos_por_mes['temperatura'], marker='o', linestyle='-', color='green', label='Temperatura por mes')
 
-# # Gráfico para el conjunto futuro
-# plt.scatter(future_data['temperatura'], future_predictions, color='red', label='Predicciones futuras', alpha=0.5)
-# plt.scatter(future_data['precipitacion_corrientes'], future_predictions, color='orange', label='Predicciones futuras (Precipitación)', alpha=0.5)
+plt.title('Variacion de temperatura a lo largo de los meses: Datos Historicos')
+plt.xlabel('fecha (YYYY-MM)',labelpad = 2)
+plt.ylabel('Temperatura (C°)')
 
-# # Añadir leyenda y etiquetas
-# plt.title('Comparación de casos de Dengue en base a Temperatura y Precipitación')
-# plt.xlabel('Valores de Temperatura y Precipitación')
-# plt.ylabel('Casos de Dengue')
+plt.xticks(rotation=90) #Con esto roto la etiqueta para que sea un poco mas legible 
+plt.subplots_adjust(bottom = 0.15) 
+
+plt.legend()
+
+plt.tight_layout()
+plt.show()
+
+# Graficar las precipitaciones por mes - DATOS HISTORICOS
+plt.figure(figsize=(15, 6))
+
+plt.plot(casos_por_mes['fecha_por_mes'].astype(str), casos_por_mes['precipitacion_corrientes'], marker='o', linestyle='-', color='red', label='Precipitacion por mes')
+
+plt.title('Precipitaciones en Corrientes a lo largo de los meses: Datos Historicos')
+plt.xlabel('fecha (YYYY-MM)',labelpad = 2)
+plt.ylabel('Precipitaciones (mm)')
+
+plt.xticks(rotation=90)
+plt.subplots_adjust(bottom = 0.15) 
+
+plt.legend()
+
+plt.tight_layout()
+plt.show()
+
+# Graficar la temperatura por mes - DATOS FUTUROS
+plt.figure(figsize=(15, 6))
+
+plt.plot(casos_por_mes_futuro['fecha_por_mes'].astype(str), casos_por_mes_futuro['temperatura'], marker='o', linestyle='-', color='green', label='Temperatura por mes')
+
+plt.title('Variacion de temperatura a lo largo de los meses: Datos Futuros')
+plt.xlabel('fecha (YYYY-MM)',labelpad = 2)
+plt.ylabel('Temperatura (C°)')
+
+plt.xticks(rotation=90) #Con esto roto la etiqueta para que sea un poco mas legible 
+plt.subplots_adjust(bottom = 0.15) 
+
+plt.legend()
+
+plt.tight_layout()
+plt.show()
+
+# Graficar las precipitaciones por mes - DATOS futuros
+plt.figure(figsize=(15, 6))
+
+plt.plot(casos_por_mes_futuro['fecha_por_mes'].astype(str), casos_por_mes_futuro['precipitacion_corrientes'], marker='o', linestyle='-', color='red', label='Precipitacion por mes')
+
+plt.title('Precipitaciones en Corrientes a lo largo de los meses: Datos Futuros')
+plt.xlabel('fecha (YYYY-MM)',labelpad = 2)
+plt.ylabel('Precipitaciones (mm)')
+
+plt.xticks(rotation=90)
+plt.subplots_adjust(bottom = 0.15) 
+
+plt.legend()
+
+plt.tight_layout()
+plt.show()
+
+# Crear el gráfico de dispersión (scatter) para cantidad de casos vs temperatura
+plt.figure(figsize=(10,6))
+plt.scatter(casos_por_mes['temperatura'], casos_por_mes['casos_corrientes'], color='tab:red')
+
+# Agregar etiquetas y título
+plt.xlabel('Temperatura (°C)')
+plt.ylabel('Cantidad de Casos de Dengue')
+plt.title('Cantidad de Casos en función de la Temperatura')
+plt.grid(True)
+
+# Mostrar el gráfico
+plt.tight_layout()
+plt.show()
+
+# Crear el gráfico de dispersión (scatter) para cantidad de casos vs precipitación
+plt.figure(figsize=(10,6))
+plt.scatter(casos_por_mes['precipitacion_corrientes'], casos_por_mes['casos_corrientes'], color='tab:blue')
+
+# Agregar etiquetas y título
+plt.xlabel('Precipitación (mm)')
+plt.ylabel('Cantidad de Casos de Dengue')
+plt.title('Cantidad de Casos en función de la Precipitación')
+plt.grid(True)
+
+# Mostrar el gráfico
+plt.tight_layout()
+plt.show()
+
+
+# casos_por_mes['fecha_por_mes'] = casos_por_mes['fecha_por_mes'].dt.to_timestamp()
+
+# #TEMPERATURA POR FECHAS 
+
+# plt.figure(figsize=(10,6))  # Definir el tamaño del gráfico
+
+# # Graficar la temperatura
+# plt.plot(casos_por_mes['fecha_por_mes'], casos_por_mes['temperatura'], color='tab:red', label='Temperatura')
+
+# # Agregar etiquetas y título
+# plt.xlabel('Fecha')
+# plt.ylabel('Temperatura (°C)')
+# plt.title('Temperatura a lo largo del tiempo')
+# # Personalizar el formato del eje X para mostrar mes y año
+# plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m'))  # Formato: Año-Mes
+
+# plt.xticks(rotation=90)  # Rotar las etiquetas del eje X para que sean legibles
+# plt.grid(True)  # Mostrar la cuadrícula
+
+# # Mostrar la leyenda
 # plt.legend()
 
+# # Ajustar el layout y mostrar el gráfico
 # plt.tight_layout()
 # plt.show()
+
+# casos_por_mes_futuro['fecha_por_mes'] = casos_por_mes_futuro['fecha_por_mes'].dt.to_timestamp()
